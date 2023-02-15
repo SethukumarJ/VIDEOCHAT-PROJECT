@@ -1,20 +1,21 @@
 package webrtc
 
-import "sync"
-
-
+import (
+	"sync"
+	"videochat/pkg/chat"
+)
 
 type Room struct {
 	Peers *Peers
-	Hub *chat.Hub
+	Hub   *chat.Hub
 }
 
-type Peers struct{
-	ListLock sync.RWMutex
+type Peers struct {
+	ListLock    sync.RWMutex
 	Connections []PeerConnectionState
 	TrackLocals map[string]*webrtc.TrackLocalStaticRTP
 }
 
-func (p *Peers) DispatchKeyFrame(){
+func (p *Peers) DispatchKeyFrame() {
 
 }

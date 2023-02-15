@@ -55,10 +55,21 @@ func createOrGetRoom(uuid string) (string, string,w.Room) {
 }
 
 func RoomViewwerWebsocket(c *websocket.Conn) {
+	uuid := c.Params("uuid")
+	if uuid == ""{
+		return 
+	}
 
+	w.RoomsLock.Lock()
+	if peer, ok := w.Rooms[uuid]; ok {
+		w.RoomsLock.Unlock()
+		roomViewerConn(c, peer.Peers)
+		return
+	}
+	w.RoomsLock.Unlock()
 }
 
-func roomViewwerConn(c *websocket.Conn, p *w.Peers){
+func roomViewerConn(c *websocket.Conn, p *w.Peers){
 
 }
 
