@@ -35,14 +35,27 @@ func (t *ThreadSafeWriter) writeJSON (v interface{}) error{
 }
 
 func (p *Peers) AddTrack (t *webrtc.TrackRemote) *webrtc.TrackLocalStaticRTP{
+	p.ListLock.Lock()
+	defer func(){
+		p.ListLock.Lock()
+		p.SignalPeerConnections()
+	
+	}()
 
+	trackLocal, err := webrtc.NewTrackLocalStaticRTP(t.Codec().RTPCodecCapability, t.ID(), t.StreamID())
+	if err != nil {
+		log.Println(err.Error())
+		return nil
+	}
+	p.TrackLocals[t.ID()] = p.TrackLocal
+	return trackLocal
 }
 
 func (p *Peers) RemoveTrack(t *webrtc.TrackLocalStaticRTP){
 
 }
 
-func(p *Peers)SignalPeerConnection(){
+func(p *Peers)SignalPeerConnections(){
 
 }
 

@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"os"
+	"time"
 	w "videochat/pkg/webrtc"
 
 	"github.com/gofiber/fiber"
@@ -22,31 +23,31 @@ func Stream(c *fiber.Ctx) error {
 	}
 
 	w.RoomsLock.Lock()
-	if _,ok := w.Streams[suuid]; ok {
+	if _, ok := w.Streams[suuid]; ok {
 		w.RoomsLock.Unlock()
 		return c.Render("stream", fiber.Map{
-			"StreamWebsocketAddr":fmt.Sprintf("%s://%s/stream/%s/websocket",ws,c.Hostname(),suuid),
-			"ChatWebsocketAddr": fmt.Sprintf("%s://%s/stream%s/chat/websocket",ws,c.Hostname(),suuid ),
-			"ViewerWebsocketAddr": fmt.Sprintf("%s://%s/stream%s/viewer/websocket", ws,c.Hostname(),suuid),
-			"Type": "stream",
-		},"layouts/main")
+			"StreamWebsocketAddr": fmt.Sprintf("%s://%s/stream/%s/websocket", ws, c.Hostname(), suuid),
+			"ChatWebsocketAddr":   fmt.Sprintf("%s://%s/stream%s/chat/websocket", ws, c.Hostname(), suuid),
+			"ViewerWebsocketAddr": fmt.Sprintf("%s://%s/stream%s/viewer/websocket", ws, c.Hostname(), suuid),
+			"Type":                "stream",
+		}, "layouts/main")
 	}
 	w.RoomsLock.Unlock()
-	return c.Render("stream",fiber.Map{
-		"NoStream":"true",
-		"Leave":"true",
-		},"layouts/main")
+	return c.Render("stream", fiber.Map{
+		"NoStream": "true",
+		"Leave":    "true",
+	}, "layouts/main")
 }
 
 func StreamWebSocket(c *websocket.Conn) {
 
 	suuid := c.Params("suuid")
-	if suuid == ""{
+	if suuid == "" {
 		return
 	}
 
 	w.RoomsLock.Lock()
-	if stream, ok := w.Streams[uuid];ok{
+	if stream, ok := w.Streams[uuid]; ok {
 		w.RoomsLock.Unlock()
 		w.StreamConn(c, streams.Peers)
 		return
@@ -56,12 +57,12 @@ func StreamWebSocket(c *websocket.Conn) {
 
 func StreamViewerWebSocket(c *websocket.Conn) {
 	suuid := c.Params("suuid")
-	if suuid == ""{
+	if suuid == "" {
 		return
 	}
 
 	w.RoomsLock.Lock()
-	if stream, ok := w.Streams[uuid];ok{
+	if stream, ok := w.Streams[uuid]; ok {
 		w.RoomsLock.Unlock()
 		viewerConn(c, streams.Peers)
 		return
@@ -70,11 +71,11 @@ func StreamViewerWebSocket(c *websocket.Conn) {
 }
 
 func viewerConn(c *websocket.Conn, p *w.Peers) {
-	ticker := time.NewTicker(1* time.Second)
+	ticker := time.NewTicker(1 * time.Second)
 	defer c.Close()
 
 	for {
-		select{
+		select {
 		case <-ticker.C:
 			w, err := c.Conn.NextWriter(websocket.TextMessage)
 			if err != nil {
