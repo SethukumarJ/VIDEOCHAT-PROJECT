@@ -70,5 +70,17 @@ func StreamViewerWebSocket(c *websocket.Conn) {
 }
 
 func viewerConn(c *websocket.Conn, p *w.Peers) {
+	ticker := time.NewTicker(1* time.Second)
+	defer c.Close()
 
+	for {
+		select{
+		case <-ticker.C:
+			w, err := c.Conn.NextWriter(websocket.TextMessage)
+			if err != nil {
+				return
+			}
+			w.Write([]byte(fmt.Sprintf("%d", len(p.Connections))))
+		}
+	}
 }
