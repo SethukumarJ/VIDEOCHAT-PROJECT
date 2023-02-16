@@ -3,6 +3,8 @@ package webrtc
 import (
 	"sync"
 	"videochat/pkg/chat"
+
+	"github.com/gofiber/websocket/v2"
 )
 
 type Room struct {
@@ -16,6 +18,40 @@ type Peers struct {
 	TrackLocals map[string]*webrtc.TrackLocalStaticRTP
 }
 
+type PeerConnectionState struct {
+	PeerConnection *webrtc.PeerConnection
+	websocket      *ThreadSafeWriter
+}
+
+type ThreadSafeWriter struct {
+	Conn *websocket.Conn
+	Mutex sync.Mutex
+}
+
+func (t *ThreadSafeWriter) writeJSON (v interface{}) error{
+	t.Mutex.Lock()
+	defer t.Mutex.Unlock()
+	return t.Conn.WriteJSON(v)
+}
+
+func (p *Peers) AddTrack (t *webrtc.TrackRemote) *webrtc.TrackLocalStaticRTP{
+
+}
+
+func (p *Peers) RemoveTrack(t *webrtc.TrackLocalStaticRTP){
+
+}
+
+func(p *Peers)SignalPeerConnection(){
+
+}
+
+
 func (p *Peers) DispatchKeyFrame() {
 
+}
+
+type websocketMessage struct {
+	Event string `json:"event"`
+	Data string `json:"event"`
 }
