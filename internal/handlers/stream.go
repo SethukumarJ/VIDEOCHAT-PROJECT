@@ -55,7 +55,18 @@ func StreamWebSocket(c *websocket.Conn) {
 }
 
 func StreamViewerWebSocket(c *websocket.Conn) {
-	suuid 
+	suuid := c.Params("suuid")
+	if suuid == ""{
+		return
+	}
+
+	w.RoomsLock.Lock()
+	if stream, ok := w.Streams[uuid];ok{
+		w.RoomsLock.Unlock()
+		viewerConn(c, streams.Peers)
+		return
+	}
+	w.RoomsLock.Unlock()
 }
 
 func viewerConn(c *websocket.Conn, p *w.Peers) {
