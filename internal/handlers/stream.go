@@ -40,10 +40,22 @@ func Stream(c *fiber.Ctx) error {
 
 func StreamWebSocket(c *websocket.Conn) {
 
+	suuid := c.Params("suuid")
+	if suuid == ""{
+		return
+	}
+
+	w.RoomsLock.Lock()
+	if stream, ok := w.Streams[uuid];ok{
+		w.RoomsLock.Unlock()
+		w.StreamConn(c, streams.Peers)
+		return
+	}
+	w.RoomsLock.Unlock()
 }
 
 func StreamViewerWebSocket(c *websocket.Conn) {
-
+	suuid 
 }
 
 func viewerConn(c *websocket.Conn, p *w.Peers) {
